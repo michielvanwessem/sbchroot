@@ -1,0 +1,18 @@
+TO BE ANNOUNCED
+chroot_warn: Added function to check if any non standard packages are
+  either on or left on the chroot. Disabled for now until I can check
+  this code properly
+configuration: Added support for multiple jobs by setting MAKEFLAGS
+configuration: Added support for custom/system language. Currently set 
+  to the default of en_US.UTF8.
++--------------------------+
+Wed Jul 23 14:42:14 UTC 2008
+choot_config: Changed a quick error in the chroot_config function.
+  Sourcing of /etc/profile should be directed to /dev/null instead of
+  pointing to itself. Mea Culpa. :-)
+configuration: Added code so we in the possible future we can read
+  our configuration out of either a global or local configuration file.
+general: all function prefixed with "function" (Just to be OCPD about
+  these kinda things.
++--------------------------+
+
