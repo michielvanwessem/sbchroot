@@ -1,0 +1,21 @@
+TODO:
+- chroot_create - build in a check to see if the directory actually exist.
+- multi OS suport (think slamd64)
+
+
+[19:05] ( mbhayes) BP{k}: what if you do multiple chroot's with that script..
+                   any to do: sh sbchroot <chroot>
+[19:06] ( mbhayes) so like: sbchroot slamd64-12.2-chroot
+[19:06] ( mbhayes) etc etc
+[19:06] ( mbhayes) with the slamd64-12.2-chroot based on the "chroot path" in
+                   the script
+
+[19:41] ( thrice`) if I do sbchroot -something_that's_not_an_option, what about
+                   a default that echos -help, instead of actually starting
+                    anyway?
+                                      
+Research how usefull this is:
+# mknod /chroot/slack10.1_base01/dev/null    c  1 3
+# mknod /chroot/slack10.1_base01/dev/random  c  1 8
+# mknod /chroot/slack10.1_base01/dev/urandom c  1 9
+
