@@ -29,9 +29,9 @@
 # set -e    # Exit on any given error.
 # set -x    # Use this to turn debuggin on.
 
-installpath="/home/ftp/mirrors/slackware.com/slackware-12.1"
+installpath="/home/ftp/mirrors/slackware.com/slackware-12.2"
 installfiles="slackware"
-buildenv=${buildenv:-"/home/sbchroot/slackware-12.1"}
+buildenv=${buildenv:-"/home/sbchroot/slackware-12.2"}
 
 # What do we want to install.
 series="a ap d e f k kde kdei l n t tcl x xap y"
@@ -62,13 +62,10 @@ JOBS="6"
 # for example: prompt="(chroot) \u@\h:\w\$ "
 prompt="\[\e[1;31m\]\u\[\e[m\]\[\e[1;35m\]@sbchroot\[\e[m\]\[\e[1;37m\]:\[\e[m\]\[\e[1;34m\]\w\[\e[m\]\[\e[1;37m\]\\\\$\[\e[m\]\[\e[1;37m\] "
 
+# manpage (future possible addtion)
+manpage="/usr/man/man8/sbchroot.8.gz"
 
 # ------------------- No Edits Needed below this line ------------------- #
-
-if [[ $UID != "0" ]]; then
-    echo "you need to be root to run this program"
-    exit 1
-fi
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchrc"
@@ -273,63 +270,105 @@ function sbchroot_clean() {
 }
 
 function chroot_help() {
-    echo ""
-    echo "   Usage: $(basename $0) {create | install | upgrade | patch | wipe | remove | start | help}"
-    echo ""
-    echo "   - create   ::  create or install a new chroot enviroment."
-    echo "   - install  ::  same as create"
-    echo ""
-    echo "    - config  ::  configuration of your chroot enviroment"
-    echo ""
-    echo "   - rebuild  ::  removes and reinstalls the chroot enviroment"
-    echo ""
-    echo "   - upgrade  ::  upgrade or patch the chroot enviroment"
-    echo "   - patch    ::  same as upgrade"
-    echo ""
-    echo "   - wipe     ::  wipe and remove the chroot"
-    echo "   - remove   ::  same wipe"
-    echo ""
-    echo "   - start    ::  start the chroot enviroment"
-    echo ""
-    echo "   - help     ::  This help"
-    echo ""
+    if [[ -r ${manpage} ]]; then
+        /usr/bin/man ${manpage}
+    elif [[ $2 == "short" ]]; then
+        echo ">Incorrect option \"$1\"..."
+        echo ""
+        echo "usage $(basename $0): [--create] [--patch] [--start]"
+        echo "                [--clean] [--rebuild] [--config] "
+        echo ""
+        echo "See also $(basename $0) --help for more information"
+    elif [[ $1 == "long" ]]; then
+cat << EOF
+SBChroot - Shellscript to create/manage/build/run chroots.
+
+OPTIONS:
+-c, -i, --create, --install
+        create the chroot enviroment. This will create the directories,
+        and install the needed files (up and including to the latest patches)
+        as well as do an initial configuration.
+
+--clear, --clean, --clean-system
+        *EXPERIMENTAL* This should remove any obviously non standard packages
+        from your system. At the moment the code is purely geared to SBo 
+        related packages. Support for SB64 and others should follow soon.
+
+-h, --help, -?
+        You're looking at it. This is the help you're looking for. 
+        Yah. RLY.
+
+-r, --rebuild
+        Rebuild the chroot. This will first wipe it, then rebuild it.
+        Note that it doesn't allow automated removal due to the way the
+        delete function works (at the moment).
+
+-rc, --config, --conf
+        Redo the initial configuration steps.
+
+-s, --start
+        The default action. This will also happen when SBChroot is called
+        without any default arguments.
+
+-u, -p, --patch, --update
+         upgrade the chroot with the lastest patches.
+
+--wipe, --remove
+        Remove the chroot. This will *delete* your chroot. Don't come 
+        whining to me. It has plenty of prompts to stop you from doing
+        something intentional stupid.
+EOF
+    fi
+    exit
 }
+
+# This way we can call `help' without being root.
+if [[ $1 == "-?" || $1 == "-h" || $1 == "--help" || $1 == "-help" ]]; then
+    chroot_help long
+fi
+
+if [[ $UID != "0" ]]; then
+    echo "You need to be root to run this program."
+    echo "See \`$(basename $0) --help\` or more options."
+    exit 1
+fi
 
 # See how we were called.
 case "$1" in
-    -create | -install | -c | -i)
+    -c | -i | --create | --install)
         chroot_create
         chroot_patch initial
         chroot_config
         ;;
-    -upgrade | -patch | -u | -p)
+	-u | -p | --patch | --update)
         chroot_patch
         ;;
-    -wipe | -remove)
+    --wipe | --remove)
         chroot_wipe
         ;;
-    -clear | -clean | -clean-system)
+    --clear | --clean | --clean-system)
         chroot_clean
         ;;
-    -rebuild | -r)
+    -r | --rebuild)
         chroot_wipe
         chroot_create
         chroot_patch initial
         chroot_config
         ;;
-    -config | -conf | -rc)
+    -rc | --config | --conf)
         chroot_config
         ;;
-    -start | -s)
+    -s | --start)
         chroot_start
         chroot_stop
-        ;;
-    -help | -h | -?)
-        chroot_help
         ;;
     *)
-        chroot_start
-        chroot_stop
+		if [[ -z $1 ]]; then
+			chroot_start
+			chroot_stop
+		else
+			chroot_help $1 short
+		fi
         ;;
 esac
 

@@ -1,4 +1,7 @@
 TO BE ANNOUNCED
+general: Check first if we need just the help (we don't need to be root
+  for this). Finally display the help if we encounter an option that 
+  doesn't exist. Thanks to Andrew Brouwers for the suggestion.
 chroot_warn: Added function to check if any non standard packages are
   either on or left on the chroot. Disabled for now until I can check
   this code properly
