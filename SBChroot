@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SBChroot - Setup and manage a chroot - version 2.5
+# SBChroot - Setup and manage a chroot
 # Copyright (c) 2007-2008, Michiel van Wessem, Manchester, United Kingdom
 # All rights reserved.
 #
@@ -66,6 +66,9 @@ prompt="\[\e[1;31m\]\u\[\e[m\]\[\e[1;35m\]@sbchroot\[\e[m\]\[\e[1;37m\]:\[\e[m\]
 manpage="/usr/man/man8/sbchroot.8.gz"
 
 # ------------------- No Edits Needed below this line ------------------- #
+
+# Current version string.
+version="2.6 alpha (local)"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchrc"
@@ -311,7 +314,10 @@ OPTIONS:
         without any default arguments.
 
 -u, -p, --patch, --update
-         upgrade the chroot with the lastest patches.
+        upgrade the chroot with the lastest patches.
+
+-v, --version
+		Display the version of the current script.
 
 --wipe, --remove
         Remove the chroot. This will *delete* your chroot. Don't come 
@@ -319,12 +325,20 @@ OPTIONS:
         something intentional stupid.
 EOF
     fi
-    exit
+    exit 0
+}
+
+function chroot_version() {
+	echo "$(basename $0) version: ${version}"
+	echo ""
+	exit 0
 }
 
 # This way we can call `help' without being root.
 if [[ $1 == "-?" || $1 == "-h" || $1 == "--help" || $1 == "-help" ]]; then
     chroot_help long
+elif [[ $1 == "-v" || $1 == "--v" || $1 == "--version" || $1 == "-version" ]]; then
+	chroot_version
 fi
 
 if [[ $UID != "0" ]]; then
@@ -362,6 +376,9 @@ case "$1" in
         chroot_start
         chroot_stop
         ;;
+    -v | --version)
+		chroot_version
+		;;
     *)
 		if [[ -z $1 ]]; then
 			chroot_start
