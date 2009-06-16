@@ -1,4 +1,6 @@
 TO BE ANNOUNCED
+chroot_patch: Check if we actually have .new files to warn about. If 
+  we don't have anything. Don't mention anything needing to be moved over
 general: Check first if we need just the help (we don't need to be root
   for this). Finally display the help if we encounter an option that 
   doesn't exist. Thanks to Andrew Brouwers for the suggestion.
