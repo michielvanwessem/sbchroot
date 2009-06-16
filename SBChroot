@@ -290,7 +290,7 @@ function chroot_help() {
     elif [[ $2 == "short" ]]; then
         echo ">Incorrect option \"$1\"..."
         echo ""
-        echo "usage $(basename $0): [--create] [--patch] [--start]"
+        echo "usage $(basename $0): <--distro=> [--create] [--patch] [--start]"
         echo "                [--clean] [--rebuild] [--config] "
         echo ""
         echo "See also $(basename $0) --help for more information"
@@ -299,6 +299,12 @@ cat << EOF
 SBChroot - Shellscript to create/manage/build/run chroots.
 
 OPTIONS:
+-d, --distro
+        Install another distro other than the one mentioned in the 
+        startup variables. This will allow support for slackware-current,
+        slackware64-versions and possible slamd64 versions. This must always
+        be called as the *FIRST* argument. (EXPERIMENTAL)
+
 -c, -i, --create, --install
         create the chroot enviroment. This will create the directories,
         and install the needed files (up and including to the latest patches)
@@ -358,6 +364,22 @@ if [[ $UID != "0" ]]; then
     echo "See \`$(basename $0) --help\` or more options."
     exit 1
 fi
+
+# Let's see if we are called to install something else
+if [[ $1 == "-d" || $1 == "--distro" ]]; then 
+    # We know that we are looking at something else, lets determine 
+    # what
+    shift
+    distro="$1"
+    
+    # Now we have the distro variable, lets get the rest of the
+    # command line options
+
+    shift
+
+fi
+
+
 
 # See how we were called.
 case "$1" in
