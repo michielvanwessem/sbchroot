@@ -68,7 +68,7 @@ manpage="/usr/man/man8/sbchroot.8.gz"
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-version="2.6 alpha (local)"
+version="2.6.02 (alpha local)"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchrc"
@@ -158,8 +158,20 @@ function chroot_patch() {
     fi
 
     echo "Checking for .new files in /etc"
-    find ${buildenv}/etc -name "*.new"
-    echo "please move these files to their proper locations"
+    ARRAY=$(find ${buildenv}/etc -name "*.new")
+    FILELIST=(ARRAY)
+    COUNT=0
+
+    if [[ ${#FILELIST[*]} -gt 0 ]]; then
+        echo "The following files have been found:"
+        until [[ $COUNT -gt ${#FILELIST[*]} ]]; do
+            echo "${FILELIST[$COUNT]}"
+            COUNT=$(($COUNT + 1))
+        done
+        echo "please move these files to their proper locations"
+    else
+        echo "No new files"
+    fi
 }
 
 function chroot_wipe() {
