@@ -29,12 +29,27 @@
 # set -e    # Exit on any given error.
 # set -x    # Use this to turn debuggin on.
 
-installpath="/home/ftp/mirrors/slackware.com/slackware-12.2"
-installfiles="slackware"
-buildenv=${buildenv:-"/home/sbchroot/slackware-12.2"}
+# Set architecture
+ARCH=${ARCH:-i486}
+
+# Set install variables
+if [ "$ARCH" = "i486" || "$ARCH" = "i686" ]; then
++  installpath="/home/ftp/mirrors/slackware.com/slackware-13.0"
++  installfiles="slackware"
++  buildenv=${buildenv:-"/home/sbchroot/slackware-13.0"}
++elif [ "$ARCH" = "x86_64" ]; then
++  installpath="/home/ftp/mirrors/slackware.com/slackware64-13.0"
++  installfiles="slackware64"
++  buildenv=${buildenv:-"/home/sbchroot/slackware64-13.0"}
++fi
+
+
+# Source: Where do we want to install from
+sourceath="/home/ftp/mirrors/slackware.com/${distro}-${version}"
+sourcedir="slackware"
 
 # What do we want to install.
-series="a ap d e f k kde kdei l n t tcl x xap y"
+series="a ap c d e f k kde kdei l n t tcl x xap y"
 
 # config files
 config_files="resolv.conf hosts X11/xorg.conf"
@@ -91,11 +106,13 @@ function chroot_create() {
 
     echo "  *- installing packages ..."
     for s in ${series}; do
-        echo " *- series ${s} ..."
-        for pkg in  $(echo ${installpath}/${installfiles}/${s}/*.tgz); do
-            echo "   \- installing $(basename ${pkg})"
-            ROOT=${buildenv} /sbin/installpkg ${pkg} > /dev/null 2>&1
-        done
+        if [[ -d ${s} ]]; then 
+            echo " *- series ${s} ..."
+            for pkg in  $(echo ${installpath}/${installfiles}/${s}/*.t?z); do
+                echo "   \- installing $(basename ${pkg})"
+                ROOT=${buildenv} /sbin/installpkg ${pkg} > /dev/null 2>&1
+            done
+        fi
     done
 }
 
@@ -105,7 +122,7 @@ function chroot_config() {
         bashprofile="${buildenv}/root/.bash_profile"
         bashrc="${buildenv}/root/.bashrc"
 
-# Just cause `cat' seems to have probelms if it doesn't
+# Just cause `cat' seems to have problems if it doesn't
 # start on line 1.
 cat > ${bashprofile} << EOF
 # .bash_profile
@@ -145,7 +162,7 @@ EOF
 
 function chroot_patch() {
     if [[ -d ${installpath}/patches/packages/ ]]; then
-        ROOT=${buildenv} upgradepkg --install-new  ${installpath}/patches/packages/*.tgz
+        ROOT=${buildenv} upgradepkg --install-new  ${installpath}/patches/packages/*.t?z
     fi
 
     if [[ $1 = "initial" ]]; then
@@ -335,7 +352,7 @@ OPTIONS:
         upgrade the chroot with the lastest patches.
 
 -v, --version
-		Display the version of the current script.
+        Display the version of the current script.
 
 --wipe, --remove
         Remove the chroot. This will *delete* your chroot. Don't come 
@@ -347,16 +364,16 @@ EOF
 }
 
 function chroot_version() {
-	echo "$(basename $0) version: ${version}"
-	echo ""
-	exit 0
+    echo "$(basename $0) version: ${version}"
+    echo ""
+    exit 0
 }
 
 # This way we can call `help' without being root.
 if [[ $1 == "-?" || $1 == "-h" || $1 == "--help" || $1 == "-help" ]]; then
     chroot_help long
 elif [[ $1 == "-v" || $1 == "--v" || $1 == "--version" || $1 == "-version" ]]; then
-	chroot_version
+    chroot_version
 fi
 
 if [[ $UID != "0" ]]; then
@@ -388,7 +405,7 @@ case "$1" in
         chroot_patch initial
         chroot_config
         ;;
-	-u | -p | --patch | --update)
+    -u | -p | --patch | --update)
         chroot_patch
         ;;
     --wipe | --remove)
@@ -411,15 +428,15 @@ case "$1" in
         chroot_stop
         ;;
     -v | --version)
-		chroot_version
-		;;
+        chroot_version
+        ;;
     *)
-		if [[ -z $1 ]]; then
-			chroot_start
-			chroot_stop
-		else
-			chroot_help $1 short
-		fi
+        if [[ -z $1 ]]; then
+            chroot_start
+            chroot_stop
+        else
+            chroot_help $1 short
+        fi
         ;;
 esac
 
