@@ -33,20 +33,15 @@
 ARCH=${ARCH:-i486}
 
 # Set install variables
-if [ "$ARCH" = "i486" || "$ARCH" = "i686" ]; then
-+  installpath="/home/ftp/mirrors/slackware.com/slackware-13.0"
-+  installfiles="slackware"
-+  buildenv=${buildenv:-"/home/sbchroot/slackware-13.0"}
-+elif [ "$ARCH" = "x86_64" ]; then
-+  installpath="/home/ftp/mirrors/slackware.com/slackware64-13.0"
-+  installfiles="slackware64"
-+  buildenv=${buildenv:-"/home/sbchroot/slackware64-13.0"}
-+fi
-
-
-# Source: Where do we want to install from
-sourceath="/home/ftp/mirrors/slackware.com/${distro}-${version}"
-sourcedir="slackware"
+if [[ "$ARCH" = "i486" || "$ARCH" = "i686" ]]; then
+    installpath="/home/ftp/mirrors/slackware.com/slackware-13.0"
+    installfiles="slackware"
+    buildenv=${buildenv:-"/home/sbchroot/slackware-13.0"}
+elif [[ "$ARCH" = "x86_64" ]]; then
+    installpath="/home/ftp/mirrors/slackware.com/slackware64-13.0"
+    installfiles="slackware64"
+    buildenv=${buildenv:-"/home/sbchroot/slackware64-13.0"}
+fi
 
 # What do we want to install.
 series="a ap c d e f k kde kdei l n t tcl x xap y"
@@ -58,6 +53,7 @@ config_files="resolv.conf hosts X11/xorg.conf"
 networking=${networking:-yes}
 custprompt=${custprompt:-yes}
 
+# Enable UTF8
 enable_utf=${enable_utf:-yes}
 utf_lang="en_US.UTF-8"
 
@@ -83,7 +79,7 @@ manpage="/usr/man/man8/sbchroot.8.gz"
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-version="2.6.02 (alpha local)"
+version="2.7.0"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchrc"
@@ -316,7 +312,7 @@ cat << EOF
 SBChroot - Shellscript to create/manage/build/run chroots.
 
 OPTIONS:
--d, --distro
+-d, --distro (experimental, not implemented)
         Install another distro other than the one mentioned in the 
         startup variables. This will allow support for slackware-current,
         slackware64-versions and possible slamd64 versions. This must always
@@ -381,22 +377,6 @@ if [[ $UID != "0" ]]; then
     echo "See \`$(basename $0) --help\` or more options."
     exit 1
 fi
-
-# Let's see if we are called to install something else
-if [[ $1 == "-d" || $1 == "--distro" ]]; then 
-    # We know that we are looking at something else, lets determine 
-    # what
-    shift
-    distro="$1"
-    
-    # Now we have the distro variable, lets get the rest of the
-    # command line options
-
-    shift
-
-fi
-
-
 
 # See how we were called.
 case "$1" in
