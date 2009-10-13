@@ -1,4 +1,8 @@
-TO BE ANNOUNCED
+Tue Oct 13 23:35:25 UTC 2009
+configuration: Added support for either Slackware or Slackware64.
+  Thanks to Andrew Brouwers (aka thrice`) for the patch.
+chroot_create: Added an check, to see if the directory before 
+  proceeding withthe installation.
 chroot_patch: Check if we actually have .new files to warn about. If 
   we don't have anything. Don't mention anything needing to be moved over
 general: Check first if we need just the help (we don't need to be root
