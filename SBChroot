@@ -26,22 +26,24 @@
 # Update: added case statement, and functions. Code improvement in
 # chroot_create thanks to James Jones <andarius@errantnutron.com>
 
-# set -e    # Exit on any given error.
-# set -x    # Use this to turn debuggin on.
-
 # Set architecture
 ARCH=${ARCH:-i486}
+VERSION=${VERSION:-13.1}
+
+if [[ "$ARCH" = "i486" || "$ARCH" = "i686" ]]; then
+    suffix=""
+elif [[ "$ARCH" = "x86_64" ]]; then
+    suffix="64"
+else
+    suffix=""
+fi
+
+DISTRO="slackware${suffix}"
 
 # Set install variables
-if [[ "$ARCH" = "i486" || "$ARCH" = "i686" ]]; then
-    installpath="/home/ftp/mirrors/slackware.com/slackware-13.0"
-    installfiles="slackware"
-    buildenv=${buildenv:-"/home/sbchroot/slackware-13.0"}
-elif [[ "$ARCH" = "x86_64" ]]; then
-    installpath="/home/ftp/mirrors/slackware.com/slackware64-13.0"
-    installfiles="slackware64"
-    buildenv=${buildenv:-"/home/sbchroot/slackware64-13.0"}
-fi
+localmirror="/home/ftp/mirrors/slackware.com/${DISTRO}-${VERSION}"
+buildenv=${buildenv:-"/home/sbchroot/${DISTRO}-${VERSION}"}
+srcdir="${DISTRO}"
 
 # What do we want to install.
 series="a ap c d e f k kde kdei l n t tcl x xap y"
@@ -67,7 +69,7 @@ warning_nonstd=${warning_nonstd:-no}
 lang="en_US.UTF8"
 
 # Set makeflags
-JOBS="6"
+JOBS="9"
 
 # define your custom prompt below
 # for example: prompt="(chroot) \u@\h:\w\$ "
@@ -79,18 +81,17 @@ manpage="/usr/man/man8/sbchroot.8.gz"
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-version="2.7.0"
+version="2.8.0"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchrc"
 localrc="${HOME}/.sbchrc"
 
 if [[ -r ${globalrc} ]]; then
+    if [[ -r ${localrc} ]]; then
+        source ${localrc}
+    fi
     source ${globalrc}
-fi
-
-if [[ -r ${localrc} ]]; then
-    source ${localrc}
 fi
 
 function chroot_create() {
@@ -101,10 +102,10 @@ function chroot_create() {
     fi
 
     echo "  *- installing packages ..."
-    for s in ${series}; do
-        if [[ -d ${s} ]]; then 
-            echo " *- series ${s} ..."
-            for pkg in  $(echo ${installpath}/${installfiles}/${s}/*.t?z); do
+    for diskset in ${series}; do
+        if [[ -d ${diskset} ]]; then 
+            echo " *- series ${diskset} ..."
+            for pkg in  $(echo ${localmirror}/${srcdir}/${diskset}/*.t?z); do
                 echo "   \- installing $(basename ${pkg})"
                 ROOT=${buildenv} /sbin/installpkg ${pkg} > /dev/null 2>&1
             done
@@ -157,8 +158,8 @@ EOF
 }
 
 function chroot_patch() {
-    if [[ -d ${installpath}/patches/packages/ ]]; then
-        ROOT=${buildenv} upgradepkg --install-new  ${installpath}/patches/packages/*.t?z
+    if [[ -d ${localmirror}/patches/packages/ ]]; then
+        ROOT=${buildenv} upgradepkg --install-new  ${localmirror}/patches/packages/*.t?z
     fi
 
     if [[ $1 = "initial" ]]; then
@@ -254,6 +255,31 @@ function chroot_warn() {
     fi
 }
 
+function chroot_alien() { 
+    echo "Implementation."
+    exit 2
+    if [[ $(readlink $(which gzip)) ]]; then
+        GZIP=$(readlink $(which gzip))
+    else
+        echo "ERROR: gzip not found on system. please install gzip before continuing..."
+    fi
+    
+    if [[ $(readlink $(which tar)) ]]; then
+        TAR=$(readlink $(which tar))
+    else
+        echo "ERROR: tar not found on system. please install tar before continuing..."
+    fi
+    
+    if [[ -d ${localmirror}/${distro}/a/ ]]; then
+        ${TAR} -C ${buildenv} -xvf ${localmirror}/${distro}/a/tar-*.tgz
+        ${TAR} -C ${buildenv} -xvf ${localmirror}/${distro}/a/gzip-*.tgz
+        
+        
+        /${buildenv}/bin/tar -C ${buildenv} -xvf ${localmirror}/${distro}/a/pkgtools-*.tgz
+        /${buildenv}/bin/tar -C ${buildenv} -xvf ${localmirror}/${distro}/a/xz-*.tgz
+    fi
+}
+
 function chroot_start() {
     if [[ ! -e ${buildenv} ]]; then
         echo "ERROR; ${buildenv} doesn't exist"
@@ -273,6 +299,10 @@ function chroot_start() {
 }
 
 function chroot_stop() {
+    if [[ -z ${OLDPATH} ]]; then
+        export PATH=${OLDPATH}
+    fi
+
     clear
     umount ${buildenv}/proc || echo "error can't umoun't ${buildenv}/proc. Please unmount manually"
     umount ${buildenv}/sys || echo "error can't umoun't ${buildenv}/proc. Please unmount manually"
@@ -323,10 +353,16 @@ OPTIONS:
         and install the needed files (up and including to the latest patches)
         as well as do an initial configuration.
 
+-a, --alien
+        create the chroot enviroment for an system that is not slackware 
+        specfic. This does require initially for gzip and tar present on 
+        the system. The rest including the setting of various PATHS is done
+        by the script.
+
 --clear, --clean, --clean-system
         *EXPERIMENTAL* This should remove any obviously non standard packages
         from your system. At the moment the code is purely geared to SBo 
-        related packages. Support for SB64 and others should follow soon.
+        related packages. 
 
 -h, --help, -?
         You're looking at it. This is the help you're looking for. 
@@ -381,6 +417,15 @@ fi
 # See how we were called.
 case "$1" in
     -c | -i | --create | --install)
+        chroot_create
+        chroot_patch initial
+        chroot_config
+        ;;
+    -a | --alien)
+        OLDPATH=${PATH}
+        export PATH=${buildenv}/sbin:${buildenv}/bin:${buildenv}/usr/sbin/:${buildenv}/usr/bin:$PATH
+
+        chroot_alien
         chroot_create
         chroot_patch initial
         chroot_config
