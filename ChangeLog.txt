@@ -1,7 +1,14 @@
+Thu Aug 19 10:01:29 UTC 2010
+configuration: Finished suppor for either Slackware or Slackware64. 
+  Code slighty reworked to make more sense. MultiOS support mostly 
+  dropped except for above mentioned. Slamd64 no longer an overly
+  viable option.
+configuration: Cleaned up code and especially variables.
++--------------------------+
 Tue Oct 13 23:35:25 UTC 2009
 configuration: Added support for either Slackware or Slackware64.
   Thanks to Andrew Brouwers (aka thrice`) for the patch.
-chroot_create: Added an check, to see if the directory before 
+chroot_create: Added an check, to see if the directory exist before 
   proceeding withthe installation.
 chroot_patch: Check if we actually have .new files to warn about. If 
   we don't have anything. Don't mention anything needing to be moved over
