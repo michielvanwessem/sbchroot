@@ -4,6 +4,7 @@ TODO:
    - "sbchroot slamd64-12.2-chroot" with the slamd64-12.2-chroot based
      on the "chroot path" in the script
 }> Install support for sbchroot to be used on other operating systems.
+}> use remote mirror instead of local.
 
 Research how usefull this is:
 # mknod /chroot/slack10.1_base01/dev/null    c  1 3
