@@ -81,17 +81,20 @@ manpage="/usr/man/man8/sbchroot.8.gz"
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-version="2.8.0"
+release="2.9.0"
 
 # If I ever decide to switch to a config file:
-globalrc="/etc/sbchrc"
-localrc="${HOME}/.sbchrc"
+globalrc="/etc/sbchroot.conf"
 
 if [[ -r ${globalrc} ]]; then
-    if [[ -r ${localrc} ]]; then
-        source ${localrc}
-    fi
     source ${globalrc}
+
+    #check that both the config file and script are in sync.
+    if [[ "$version" != "$release" ]]; then
+        echo "the version of your configuration file is out of sync with the script."
+        echo "please make sure you have merged any changes in the configuration file,"
+        echo "before continuing. Alternatively this may be a problem upstream"
+    fi
 fi
 
 function chroot_create() {
@@ -120,7 +123,7 @@ function chroot_config() {
         bashrc="${buildenv}/root/.bashrc"
 
 # Just cause `cat' seems to have problems if it doesn't
-# start on line 1.
+# start on column 1.
 cat > ${bashprofile} << EOF
 # .bash_profile
 # bash configuration file for login-shells.
@@ -221,7 +224,7 @@ function chroot_wipe() {
         NO)
             echo "Okay. Wise Choice"
             exit 0
-            ;;
+:           ;;
         *)
             clear
             echo "Please type either \"YES\" or \"NO\""
@@ -256,8 +259,6 @@ function chroot_warn() {
 }
 
 function chroot_alien() { 
-    echo "Implementation."
-    exit 2
     if [[ $(readlink $(which gzip)) ]]; then
         GZIP=$(readlink $(which gzip))
     else
@@ -269,6 +270,9 @@ function chroot_alien() {
     else
         echo "ERROR: tar not found on system. please install tar before continuing..."
     fi
+
+    OLDPATH=${PATH}
+    export PATH=${buildenv}/sbin:${buildenv}/bin:${buildenv}/usr/sbin/:${buildenv}/usr/bin:$PATH
     
     if [[ -d ${localmirror}/${distro}/a/ ]]; then
         ${TAR} -C ${buildenv} -xvf ${localmirror}/${distro}/a/tar-*.tgz
@@ -422,9 +426,6 @@ case "$1" in
         chroot_config
         ;;
     -a | --alien)
-        OLDPATH=${PATH}
-        export PATH=${buildenv}/sbin:${buildenv}/bin:${buildenv}/usr/sbin/:${buildenv}/usr/bin:$PATH
-
         chroot_alien
         chroot_create
         chroot_patch initial
