@@ -1,4 +1,10 @@
+configuration: Added automatic $ARCH detection in favour of setting 
+  this. If wanted this still can be set in the script. But using the shells
+  enviroment for this is ultimately the better choice.
++--------------------------+
 Thu Aug 19 10:01:29 UTC 2010
+configuration: Removed the need for a local configuration file. Since 
+  root only can run chroots anyway.
 configuration: Finished suppor for either Slackware or Slackware64. 
   Code slighty reworked to make more sense. MultiOS support mostly 
   dropped except for above mentioned. Slamd64 no longer an overly
