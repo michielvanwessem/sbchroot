@@ -24,11 +24,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Update: added case statement, and functions. Code improvement in
-# chroot_create thanks to James Jones <andarius@errantnutron.com>
+# chroot_create thanks to James Jones <andarius@errantnutron.com>.
 
 # Set architecture
-ARCH=${ARCH:-i486}
 VERSION=${VERSION:-13.1}
+ARCH=${ARCH:-""}            # Dropped in favour of automatic arch detection.
+                            # If you set it explicitly, this will still work.
+if [[ -z "$ARCH" ]]; then
+    case "$( uname -m )" in
+        i?86) ARCH=i486 ;;
+        arm*) ARCH=arm ;;
+        # Unless $ARCH is already set, use uname -m for all other archs:
+        *) ARCH=$( uname -m ) ;;
+    esac
+fi 
 
 if [[ "$ARCH" = "i486" || "$ARCH" = "i686" ]]; then
     suffix=""
@@ -142,9 +151,7 @@ source /etc/profile > /dev/null 2>&1
 
 LANG='${lang}'
 MAKEFLAGS='-j ${JOBS}'
-PS1='${prompt}'
-
-export PS1
+export PS1='${prompt}'
 EOF
 
     fi
@@ -157,7 +164,6 @@ EOF
             fi
         done
     fi
-
 }
 
 function chroot_patch() {
@@ -258,6 +264,11 @@ function chroot_warn() {
     fi
 }
 
+function chroot_distro() {
+    echo "IMPLEMENTATION FAIL!"
+    exit 2
+}
+
 function chroot_alien() { 
     if [[ $(readlink $(which gzip)) ]]; then
         GZIP=$(readlink $(which gzip))
@@ -308,9 +319,9 @@ function chroot_stop() {
     fi
 
     clear
-    umount ${buildenv}/proc || echo "error can't umoun't ${buildenv}/proc. Please unmount manually"
-    umount ${buildenv}/sys || echo "error can't umoun't ${buildenv}/proc. Please unmount manually"
-    umount ${buildenv}/dev || echo "error can't umoun't ${buildenv}/proc. Please unmount manually"
+    umount ${buildenv}/proc || echo "error can't umount ${buildenv}/proc. Please unmount manually"
+    umount ${buildenv}/sys || echo "error can't umount ${buildenv}/proc. Please unmount manually"
+    umount ${buildenv}/dev || echo "error can't umount ${buildenv}/proc. Please unmount manually"
 }
 
 function sbchroot_clean() {
@@ -338,7 +349,7 @@ function chroot_help() {
         echo ">Incorrect option \"$1\"..."
         echo ""
         echo "usage $(basename $0): <--distro=> [--create] [--patch] [--start]"
-        echo "                [--clean] [--rebuild] [--config] "
+        echo "                [--clean] [--rebuild] [--config] [--alien]"
         echo ""
         echo "See also $(basename $0) --help for more information"
     elif [[ $1 == "long" ]]; then
@@ -346,16 +357,16 @@ cat << EOF
 SBChroot - Shellscript to create/manage/build/run chroots.
 
 OPTIONS:
--d, --distro (experimental, not implemented)
-        Install another distro other than the one mentioned in the 
-        startup variables. This will allow support for slackware-current,
-        slackware64-versions and possible slamd64 versions. This must always
-        be called as the *FIRST* argument. (EXPERIMENTAL)
-
 -c, -i, --create, --install
         create the chroot enviroment. This will create the directories,
         and install the needed files (up and including to the latest patches)
         as well as do an initial configuration.
+
+-d, --distro (experimental, not implemented)
+        Install another distro other than the one mentioned in the 
+        startup variables. This will allow support for slackware-current,
+        slackware64-versions and possible slamd64 versions. This must always
+        be called as the *FIRST* argument. (EXPERIMENTAL - NOT IMPLEMENTED)
 
 -a, --alien
         create the chroot enviroment for an system that is not slackware 
