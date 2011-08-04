@@ -2,3 +2,8 @@ SBChroot is a tool that simplifies and automates the creates of
 `full install' changeroots for Slackware. The script assumes the 
 presence of a mirror on the local system from which it can install.
 
+If you like to submit a patch, bugfix etc. The preferred method is
+to clone my code on github and ammend the code and submit a pull
+request. Failing that .. please email patches in a full unified diff
+format (diff -Naur) only.
+
