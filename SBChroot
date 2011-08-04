@@ -91,7 +91,7 @@ manpage="/usr/man/man8/sbchroot.8.gz"
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-release="2.8.1"
+release="2.8.2"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchroot.conf"
