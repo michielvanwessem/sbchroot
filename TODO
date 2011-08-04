@@ -5,6 +5,7 @@ TODO:
      on the "chroot path" in the script
 }> Install support for sbchroot to be used on other operating systems.
 }> use remote mirror instead of local.
+}> create error reporting and resolution to help in trouble shooting
 
 Research how usefull this is:
 # mknod /chroot/slack10.1_base01/dev/null    c  1 3
