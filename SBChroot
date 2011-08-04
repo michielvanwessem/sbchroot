@@ -116,7 +116,7 @@ function chroot_create() {
 
     echo "  *- installing packages ..."
     for diskset in ${series}; do
-        if [[ -d ${diskset} ]]; then 
+        if [[ -d ${localmirror}/${srcdir}/${diskset} ]]; then 
             echo " *- series ${diskset} ..."
             for pkg in  $(echo ${localmirror}/${srcdir}/${diskset}/*.t?z); do
                 echo "   \- installing $(basename ${pkg})"
@@ -183,7 +183,7 @@ function chroot_patch() {
 
     echo "Checking for .new files in /etc"
     ARRAY=$(find ${buildenv}/etc -name "*.new")
-    FILELIST=(ARRAY)
+    FILELIST=($ARRAY)
     COUNT=0
 
     if [[ ${#FILELIST[*]} -gt 0 ]]; then
