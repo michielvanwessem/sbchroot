@@ -55,7 +55,7 @@ buildenv=${buildenv:-"/home/sbchroot/${DISTRO}-${VERSION}"}
 srcdir="${DISTRO}"
 
 # What do we want to install.
-series="a ap c d e f k kde kdei l n t tcl x xap y"
+series="a ap d e f k kde kdei l n t tcl x xap y"
 
 # config files
 config_files="resolv.conf hosts X11/xorg.conf"
@@ -75,10 +75,11 @@ warning_nonstd=${warning_nonstd:-no}
 # Set a custom language
 # you can set it to the same language as your system as follows:
 # lang=${LANG}
-lang="en_US.UTF8"
+#lang="en_US.UTF8"
+lang="${lang:-${LANG}}"
 
 # Set makeflags
-JOBS="9"
+JOBS="7"
 
 # define your custom prompt below
 # for example: prompt="(chroot) \u@\h:\w\$ "
@@ -90,7 +91,7 @@ manpage="/usr/man/man8/sbchroot.8.gz"
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-release="2.9.0"
+release="2.8.1"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchroot.conf"
