@@ -253,12 +253,12 @@ function chroot_wipe() {
 function chroot_check() {
     for config in ${config_files}; do
         MD5SUM_LOC=$(md5sum /etc/${config} | awk '{ print $1 }')
-        MD5SUM_CHR=$(md5sum ${buildevn}/etc/${config} | awk '{ print $1 }')
+        MD5SUM_CHR=$(md5sum ${buildenv}/etc/${config} | awk '{ print $1 }')
 
         if [[ ${MD5SUM_LOC} != ${MD5SUM_CHR} ]]; then
             if [[ -f /etc/${config} ]]; then
                 echo "* - Updating ${buildenv}/etc/${config}"
-                cp ${MD5SUM_LOC} ${MD5SUM_CHR}
+                cp -av /etc/${config} ${buildenv}/etc/${config}
             fi
         fi
     done
