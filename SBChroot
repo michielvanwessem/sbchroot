@@ -27,9 +27,14 @@
 # chroot_create thanks to James Jones <andarius@errantnutron.com>.
 
 # Set architecture
-VERSION=${VERSION:-13.1}
-ARCH=${ARCH:-""}            # Dropped in favour of automatic arch detection.
-                            # If you set it explicitly, this will still work.
+VERSION=${VERSION:-13.37}
+
+# We normally work with automatic ARCH detection. However there may be 
+# some scenarios where you want to create a chroot for a different ARCH 
+# then the one on your system. In which case set ARCH below it will 
+# then skip the automagic detection.
+ARCH=""
+
 if [[ -z "$ARCH" ]]; then
     case "$( uname -m )" in
         i?86) ARCH=i486 ;;
@@ -51,10 +56,10 @@ DISTRO="slackware${suffix}"
 
 # Set install variables
 localmirror="/home/ftp/mirrors/slackware.com/${DISTRO}-${VERSION}"
-buildenv=${buildenv:-"/home/sbchroot/${DISTRO}-${VERSION}"}
+buildenv=${buildenv:-"/chroot/${DISTRO}-${VERSION}"}
 srcdir="${DISTRO}"
 
-# What do we want to install.
+# What do we want to install
 series="a ap d e f k kde kdei l n t tcl x xap y"
 
 # config files
@@ -74,12 +79,9 @@ warning_nonstd=${warning_nonstd:-no}
 
 # Set a custom language
 # you can set it to the same language as your system as follows:
-# lang=${LANG}
-#lang="en_US.UTF8"
+# lang=${LANG} or set a custom language: with lang="en_US.UTF8"
 lang="${lang:-${LANG}}"
 
-# Set makeflags
-JOBS="7"
 
 # define your custom prompt below
 # for example: prompt="(chroot) \u@\h:\w\$ "
@@ -88,10 +90,17 @@ prompt="\[\e[1;31m\]\u\[\e[m\]\[\e[1;35m\]@sbchroot\[\e[m\]\[\e[1;37m\]:\[\e[m\]
 # manpage (future possible addtion)
 manpage="/usr/man/man8/sbchroot.8.gz"
 
+# Set makeflags
+if [[ ! -z $MAKEFLAGS ]]; then
+    JOBS="$(echo $MAKEFLAGS | awk '{ print $NF }')"
+else
+    JOBS="7"
+fi
+
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-release="2.8.2"
+release="2.8.3"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchroot.conf"
@@ -100,7 +109,7 @@ if [[ -r ${globalrc} ]]; then
     source ${globalrc}
 
     #check that both the config file and script are in sync.
-    if [[ "$version" != "$release" ]]; then
+    if [[ "$VERSION" != "$release" ]]; then
         echo "the version of your configuration file is out of sync with the script."
         echo "please make sure you have merged any changes in the configuration file,"
         echo "before continuing. Alternatively this may be a problem upstream"
@@ -243,8 +252,8 @@ function chroot_wipe() {
 
 function chroot_check() {
     for config in ${config_files}; do
-        MD5SUM_LOC=$(md5sum /etc/${config})
-        MD5SUM_CHR=$(md5sum ${buildevn}/etc/${config})
+        MD5SUM_LOC=$(md5sum /etc/${config} | awk '{ print $1 }')
+        MD5SUM_CHR=$(md5sum ${buildevn}/etc/${config} | awk '{ print $1 }')
 
         if [[ ${MD5SUM_LOC} != ${MD5SUM_CHR} ]]; then
             if [[ -f /etc/${config} ]]; then
@@ -309,7 +318,7 @@ function chroot_start() {
     mount -o bind /sys ${buildenv}/sys -t sysfs
     mount -o bind /dev ${buildenv}/dev -t dev
 
-    clear
+    /usr/bin/clear
 
     chroot ${buildenv} /bin/bash
 }
@@ -319,10 +328,10 @@ function chroot_stop() {
         export PATH=${OLDPATH}
     fi
 
-    clear
-    umount ${buildenv}/proc || echo "error can't umount ${buildenv}/proc. Please unmount manually"
-    umount ${buildenv}/sys || echo "error can't umount ${buildenv}/proc. Please unmount manually"
-    umount ${buildenv}/dev || echo "error can't umount ${buildenv}/proc. Please unmount manually"
+    /usr/bin/clear
+    /sbin/umount ${buildenv}/proc || echo "error can't umount ${buildenv}/proc. Please unmount manually"
+    /sbin/umount ${buildenv}/sys || echo "error can't umount ${buildenv}/proc. Please unmount manually"
+    /sbin/umount ${buildenv}/dev || echo "error can't umount ${buildenv}/proc. Please unmount manually"
 }
 
 function sbchroot_clean() {
@@ -412,7 +421,8 @@ EOF
 }
 
 function chroot_version() {
-    echo "$(basename $0) version: ${version}"
+    echo "$(basename $0) version: ${release}"
+    echo "Running on ${DISTRO} $(awk '{print $NF}' /etc/slackware-version)"
     echo ""
     exit 0
 }
