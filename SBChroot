@@ -33,7 +33,7 @@ VERSION=${VERSION:-13.37}
 # some scenarios where you want to create a chroot for a different ARCH 
 # then the one on your system. In which case set ARCH below it will 
 # then skip the automagic detection.
-ARCH=""
+ARCH=${ARCH:-""}
 
 if [[ -z "$ARCH" ]]; then
     case "$( uname -m )" in
@@ -55,7 +55,7 @@ fi
 DISTRO="slackware${suffix}"
 
 # Set install variables
-localmirror="/home/ftp/mirrors/slackware.com/${DISTRO}-${VERSION}"
+localmirror=${localmirror:-"/home/ftp/mirrors/slackware.com/${DISTRO}-${VERSION}"}
 buildenv=${buildenv:-"/chroot/${DISTRO}-${VERSION}"}
 srcdir="${DISTRO}"
 
