@@ -75,8 +75,8 @@ cat $CWD/README > $PKG/usr/doc/$PRGNAM-$VERSION/README
 cat $CWD/ChangeLog.txt > $PKG/usr/doc/$PRGNAM-$VERSION/ChangeLog.txt
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
 
-mkdir -p $PKG/etc
-cp -a sbchroot.conf $PKG/etc/sbchroot.conf.new
+mkdir -p $PKG/etc/sbchroot
+cp -a sbchroot.conf $PKG/etc/sbchroot/sbchroot.conf.new
 
 mkdir -p $PKG/usr/sbin
 cp -a SBChroot $PKG/usr/sbin
