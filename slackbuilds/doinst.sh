@@ -24,4 +24,4 @@ preserve_perms() {
   config $NEW
 }
 
-config etc/sbchroot.conf.new
+config etc/sbchroot/sbchroot.conf.new
