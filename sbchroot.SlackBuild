@@ -49,10 +49,8 @@ rm -rf $PRGNAM-$VERSION
 mkdir -p $PRGNAM-$VERSION
 cd $PRGNAM-$VERSION
 
-install -D $CWD/SBChroot usr/sbin/sbchroot
-install -D $CWD/sbchroot.conf etc/sbchroot/sbchroot.conf.new
-install -D $CWD/ChangeLog.txt usr/doc/$PRGNAM-$VERSION/ChangeLog.txt
-install -D $CWD/README usr/doc/$PRGNAM-$VERSION/README
+cp $CWD/SBChroot .
+cp $CWD/sbchroot.conf .
 install -D $CWD/sbchroot.8 usr/man/man8/sbchroot.8
 
 chown -R root:root .
@@ -73,10 +71,18 @@ find usr/man -type f -exec gzip -9 {} \;
 # to adjust your script as needed
 # Also, include the SlackBuild script in the documentation directory
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
-cp -a \
-  usr/doc/$PRGNAM-$VERSION/ \
-  $PKG/usr/doc/$PRGNAM-$VERSION
+cat $CWD/README > $PKG/usr/doc/$PRGNAM-$VERSION/README
+cat $CWD/ChangeLog.txt > $PKG/usr/doc/$PRGNAM-$VERSION/ChangeLog.txt
 cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+
+mkdir -p $PKG/etc
+cp -a sbchroot.conf $PKG/etc/sbchroot.conf.new
+
+mkdir -p $PKG/usr/sbin
+cp -a SBChroot $PKG/usr/sbin
+
+mkdir -p $PKG/usr/man/man8
+cp -a usr/man/man8/sbchroot.8.gz $PKG/usr/man/man8
 
 # Copy the slack-desc (and a custom doinst.sh if necessary) into ./install
 mkdir -p $PKG/install
