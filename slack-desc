@@ -1,0 +1,19 @@
+# HOW TO EDIT THIS FILE:
+# The "handy ruler" below makes it easier to edit a package description.  Line
+# up the first '|' above the ':' following the base package name, and the '|'
+# on the right side marks the last column you can put a character in.  You must
+# make exactly 11 lines for the formatting to be correct.  It's also
+# customary to leave one space after the ':' except on otherwise blank lines.
+
+         |-----handy-ruler------------------------------------------------------|
+sbchroot: sbchroot (Slackware chroot script)
+sbchroot:
+sbchroot: SBChroot is a tool that simplifies and automates the creates of
+sbchroot: `full install' changeroots for Slackware. The script assumes the
+sbchroot: presence of a mirror on the local system from which it can install.
+sbchroot: 
+sbchroot: If you like to submit a patch, bugfix etc. The preferred method is
+sbchroot: to clone my code on github and ammend the code and submit a pull
+sbchroot: request. Failing that .. please email patches in a full unified diff
+sbchroot: format (diff -Naur) only.
+sbchroot: 
