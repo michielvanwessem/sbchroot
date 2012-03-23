@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# Slackware build script for sbchroot
+#
+# Written by Ken Roberts (alisonken1@juno.com)
+# Copyright (c) 2012, Michiel van Wessem, Manchester, United Kingdom
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#
+# * Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# This slakbuild assumes you're in the sbchroot directory and them
+# extra slackbuild files are in slackbuilds/ directory
+#
+PRGNAM=SBChroot
+VERSION=${VERSION:-2.8.3}
+BUILD=${BUILD:-1}
+TAG=${TAG:-_SBo}
+
+# Since this is a bash script - no need for ARCH checks
+ARCH="noarch"
+
+CWD=$(pwd)
+TMP=${TMP:-/tmp/SBo}
+PKG=$TMP/package-$PRGNAM
+OUTPUT=${OUTPUT:-/tmp}
+
+set -e
+
+rm -rf $PKG
+mkdir -p $TMP $PKG $OUTPUT
+cd $TMP
+# Until we get a tarball worked out, do individual files for now
+# tar xvf $CWD/$PRGNAM-$VERSION.tar.gz
+cd $PKG
+
+# Since this is a shell script no make/make install/strip needed.
+mkdir -p $PKG/usr/{man/man8,sbin}
+install -D -o root -g root -m 0755 $CWD/../$PRGNAM $PKG/usr/sbin/$PRGNAM
+install -D -o root -g root -m 0644 $CWD/../$PRGNAM.8 $PKG/usr/man/man8/$PRGNAM.8
+
+mkdir -p $PKG/etc/sbchroot
+install -D -o root -g root -m 0664 $CWD/../$PRGNAM.conf $PKG/etc/sbchroot/$PRGNAM.conf.new
+
+find $PKG/usr/man -type f -exec gzip -9 {} \;
+
+mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+cat $CWD/../README > $PKG/usr/doc/$PRGNAM-$VERSION/README
+cat $CWD/../ChangeLog.txt > $PKG/usr/doc/$PRGNAM-$VERSION/ChangeLog.txt
+cat $CWD/$PRGNAM.SlackBuild > $PKG/usr/doc/$PRGNAM-$VERSION/$PRGNAM.SlackBuild
+
+mkdir -p $PKG/install
+cat $CWD/slack-desc > $PKG/install/slack-desc
+cat $CWD/doinst.sh > $PKG/install/doinst.sh
+
+cd $PKG
+/sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD$TAG.${PKGTYPE:-tgz}
