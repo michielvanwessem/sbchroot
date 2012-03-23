@@ -6,14 +6,14 @@
 # customary to leave one space after the ':' except on otherwise blank lines.
 
          |-----handy-ruler------------------------------------------------------|
-sbchroot: sbchroot (Slackware chroot script)
-sbchroot:
-sbchroot: SBChroot is a tool that simplifies and automates the creates of
-sbchroot: `full install' changeroots for Slackware. The script assumes the
-sbchroot: presence of a mirror on the local system from which it can install.
-sbchroot: 
-sbchroot: If you like to submit a patch, bugfix etc. The preferred method is
-sbchroot: to clone my code on github and ammend the code and submit a pull
-sbchroot: request. Failing that .. please email patches in a full unified diff
-sbchroot: format (diff -Naur) only.
-sbchroot: 
+SBChroot: SBChroot (Slackware chroot script)
+SBChroot:
+SBChroot: SBChroot is a tool that simplifies and automates the creates of
+SBChroot: `full install' changeroots for Slackware. The script assumes the
+SBChroot: presence of a mirror on the local system from which it can install.
+SBChroot: 
+SBChroot: If you like to submit a patch, bugfix etc. The preferred method is
+SBChroot: to clone my code on github and ammend the code and submit a pull
+SBChroot: request. Failing that .. please email patches in a full unified diff
+SBChroot: format (diff -Naur) only.
+SBChroot: 
