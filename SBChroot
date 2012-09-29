@@ -60,7 +60,7 @@ buildenv=${buildenv:-"/chroot/${DISTRO}-${VERSION}"}
 srcdir="${DISTRO}"
 
 # What do we want to install
-series="a ap d e f k kde kdei l n t tcl x xap y"
+series="a ap d e f k kde kdei l n t tcl x xap xfce y"
 
 # config files
 config_files="resolv.conf hosts X11/xorg.conf"
