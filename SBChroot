@@ -27,7 +27,7 @@
 # chroot_create thanks to James Jones <andarius@errantnutron.com>.
 
 # Set architecture
-VERSION=${VERSION:-13.37}
+VERSION=${VERSION:-14.0}
 
 # We normally work with automatic ARCH detection. However there may be 
 # some scenarios where you want to create a chroot for a different ARCH 
