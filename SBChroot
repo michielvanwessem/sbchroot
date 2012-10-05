@@ -33,7 +33,7 @@ VERSION=${VERSION:-14.0}
 # some scenarios where you want to create a chroot for a different ARCH 
 # then the one on your system. In which case set ARCH below it will 
 # then skip the automagic detection.
-ARCH=${ARCH:-""}
+#ARCH=""
 
 if [[ -z "$ARCH" ]]; then
     case "$( uname -m )" in
@@ -85,7 +85,7 @@ lang="${lang:-${LANG}}"
 
 # define your custom prompt below
 # for example: prompt="(chroot) \u@\h:\w\$ "
-prompt="\[\e[1;31m\]\u\[\e[m\]\[\e[1;35m\]@sbchroot\[\e[m\]\[\e[1;37m\]:\[\e[m\]\[\e[1;34m\]\w\[\e[m\]\[\e[1;37m\]\\\\$\[\e[m\]\[\e[1;37m\] "
+prompt="\[\e[1;31m\]\u\[\e[m\]\[\e[1;35m\]@sbchroot\[\e[0;31m\]\%ROOTARCH%\[\e[m\]\[\e[1;37m\]:\[\e[m\]\[\e[1;34m\]\w\[\e[m\]\[\e[1;37m\]\\\\$\[\e[m\]\[\e[1;37m\] "
 
 # manpage (future possible addtion)
 manpage="/usr/man/man8/sbchroot.8.gz"
@@ -167,6 +167,17 @@ EOF
     fi
 
     echo "Done."
+
+    # Add the right suffix for ROOTARCH based on the type of chroot we are building
+    if [[ "$ARCH" = "i486" || "$ARCH" = "i686" ]]; then
+        sed -i 's#%ROOTARCH%#32#g' ${buildenv}/root/.bashrc
+    elif [[ "$ARCH" = "x86_64" ]]; then
+        sed -i 's#%ROOTARCH%#64#g' ${buildenv}/root/.bashrc
+    else
+        sed -i 's#%ROOTARCH%##g' ${buildenv}/root/.bashrc
+    fi
+
+
     if [[ "${networking}" == "yes" ]]; then
         for config in ${config_files}; do
             if [[ -f /etc/${config} ]]; then
@@ -320,7 +331,8 @@ function chroot_start() {
 
     /usr/bin/clear
 
-    chroot ${buildenv} /bin/bash
+    # Let's force a login shell.
+    chroot ${buildenv} /bin/bash -l
 }
 
 function chroot_stop() {
