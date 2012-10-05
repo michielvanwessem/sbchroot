@@ -100,7 +100,7 @@ fi
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-release="2.8.3"
+release="2.8.4"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchroot.conf"
