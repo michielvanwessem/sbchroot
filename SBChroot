@@ -159,8 +159,10 @@ cat > ${bashrc} << EOF
 
 source /etc/profile > /dev/null 2>&1
 
-LANG='${lang}'
-MAKEFLAGS='-j ${JOBS}'
+export ARCH='%BASEARCH%'
+export LANG='${lang}'
+export MAKEFLAGS='-j ${JOBS}'
+
 export PS1='${prompt}'
 EOF
 
@@ -171,10 +173,13 @@ EOF
     # Add the right suffix for ROOTARCH based on the type of chroot we are building
     if [[ "$ARCH" = "i486" || "$ARCH" = "i686" ]]; then
         sed -i 's#%ROOTARCH%#32#g' ${buildenv}/root/.bashrc
+        sed -i 's#%BASEARCH%#i486#g' ${buildenv}/root/.bashrc
     elif [[ "$ARCH" = "x86_64" ]]; then
         sed -i 's#%ROOTARCH%#64#g' ${buildenv}/root/.bashrc
+        sed -i 's#%BASEARCH%#x86_64#g' ${buildenv}/root/.bashrc
     else
         sed -i 's#%ROOTARCH%##g' ${buildenv}/root/.bashrc
+        sed -i 's#%BASEARCH%##g' ${buildenv}/root/.bashrc
     fi
 
 
