@@ -124,7 +124,7 @@ function chroot_create() {
     fi
 
     # Let's check if the PKGDIR is valid, after silly bug report by firebird. ;-)
-    if [[ ! -e ${localmirror}/${srcdir}/MANIFEST.bz2 ]]
+    if [[ ! -e ${localmirror}/${srcdir}/MANIFEST.bz2 ]]; then
         echo "ERROR: Can't find MANIFEST.bz2"
         echo "       Double check the location of your mirror is correct and complete"
         exit 1
