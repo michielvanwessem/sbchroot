@@ -1,4 +1,6 @@
 TODO:
+Write code to add /etc/slackpkg/mirrors
+
 }> Investigate possibility for chroot specification on the command line
    - sh sbchroot <chroot>
    - "sbchroot slamd64-12.2-chroot" with the slamd64-12.2-chroot based

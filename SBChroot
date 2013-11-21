@@ -27,7 +27,7 @@
 # chroot_create thanks to James Jones <andarius@errantnutron.com>.
 
 # Set architecture
-VERSION=${VERSION:-14.0}
+VERSION=${VERSION:-14.1}
 
 # We normally work with automatic ARCH detection. However there may be 
 # some scenarios where you want to create a chroot for a different ARCH 
@@ -52,7 +52,7 @@ else
     suffix=""
 fi
 
-DISTRO="slackware${suffix}"
+DISTRO="slackware{suffix}"
 
 # Set install variables
 localmirror=${localmirror:-"/home/ftp/mirrors/slackware.com/${DISTRO}-${VERSION}"}
@@ -100,7 +100,7 @@ fi
 # ------------------- No Edits Needed below this line ------------------- #
 
 # Current version string.
-release="2.8.4"
+release="2.8.5"
 
 # If I ever decide to switch to a config file:
 globalrc="/etc/sbchroot.conf"
@@ -123,6 +123,14 @@ function chroot_create() {
         mkdir -p ${buildenv}
     fi
 
+    # Let's check if the PKGDIR is valid, after silly bug report by firebird. ;-)
+    if [[ ! -e ${localmirror}/${srcdir}/MANIFEST.bz2 ]]
+        echo "ERROR: Can't find MANIFEST.bz2"
+        echo "       Double check the location of your mirror is correct and complete"
+        exit 1
+    fi
+
+    
     echo "  *- installing packages ..."
     for diskset in ${series}; do
         if [[ -d ${localmirror}/${srcdir}/${diskset} ]]; then 
@@ -324,6 +332,8 @@ function chroot_alien() {
 function chroot_start() {
     if [[ ! -e ${buildenv} ]]; then
         echo "ERROR; ${buildenv} doesn't exist"
+        echo "ERROR; Did you perhaps mean to run $0 --create instead?"
+
         exit 1
     fi
 
