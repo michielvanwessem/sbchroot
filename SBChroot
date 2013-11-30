@@ -52,7 +52,7 @@ else
     suffix=""
 fi
 
-DISTRO="slackware{suffix}"
+DISTRO="slackware${suffix}"
 
 # Set install variables
 localmirror=${localmirror:-"/home/ftp/mirrors/slackware.com/${DISTRO}-${VERSION}"}
